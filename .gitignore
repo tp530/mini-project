@@ -1,3 +1,7 @@
+# Dataset and predictions
+data/
+predictions/
+
 # Visual Studio Code
 .vscode/
 
