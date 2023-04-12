@@ -4,7 +4,7 @@ from nptyping import NDArray, Float64, Shape
 
 class Zernike_generator():
 
-    def __init__(self, matrix_size: int, xy_space_extent: float):
+    def __init__(self, matrix_size: int, xy_space_extent: float, fractional_pupil_radius: float = 1):
         """
         Creates an instance of the Zernike aberration generator.
 
@@ -23,7 +23,8 @@ class Zernike_generator():
         self._mesh_X, self._mesh_Y = np.meshgrid(x, y)
         self._rho = np.sqrt(self._mesh_X ** 2 + self._mesh_Y ** 2)
         self._theta = np.arctan2(self._mesh_Y, self._mesh_X)
-        self._mask = np.where(self._rho > 1, 0, 1)
+        self._fractional_pupil_radius = fractional_pupil_radius
+        self._mask = np.where(self._rho > self._xy_space_extent * self._fractional_pupil_radius, 0, 1)
 
     def _nm_normalization(self, n: int, m: int):
         """
@@ -75,7 +76,7 @@ class Zernike_generator():
             radial += (-1.) ** k * binom(n - k, k) * binom(n - 2 *
                         k, (n - m0) // 2 - k) * self._rho ** (n - 2 * k)
 
-        radial = radial * (self._rho <= 1.)
+        radial = radial * (self._rho <= self._xy_space_extent * self._fractional_pupil_radius)
 
         if normalized:
             prefac = 1. / self._nm_normalization(n, m)
